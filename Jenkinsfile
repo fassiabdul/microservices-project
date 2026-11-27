@@ -1,5 +1,7 @@
+
 pipeline {
     agent any
+
     environment {
         S3_BUCKET = 'fassi-microservices-artifacts'
     }
@@ -18,7 +20,7 @@ pipeline {
 
                     aws s3 cp \
                         artifacts/deployment-${BUILD_NUMBER}.tar.gz \
-                        s3://${microservice.project.artifact.bucket }/microservices-project/${main}/${5}/deployment-${5}.tar.gz \
+                        s3://${S3_BUCKET}/microservices-project/${BRANCH_NAME}/${BUILD_NUMBER}/deployment-${BUILD_NUMBER}.tar.gz \
                         --sse AES256
                 '''
 
@@ -29,20 +31,32 @@ pipeline {
             }
         }
 
-    stages {
         stage('Deploy To Kubernetes') {
             steps {
-                withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: 'EKS-1', contextName: '', credentialsId: 'k8-token', namespace: 'webapps', serverUrl: 'https://959E6939FD0CC72E214840E35699D99A.gr7.ap-south-1.eks.amazonaws.com']]) {
-                    sh "kubectl apply -f deployment-service.yml"
-                    
+                withKubeCredentials(kubectlCredentials: [[
+                    caCertificate: '',
+                    clusterName: 'EKS-1',
+                    contextName: '',
+                    credentialsId: 'k8-token',
+                    namespace: 'webapps',
+                    serverUrl: 'https://959E6939FD0CC72E214840E35699D99A.gr7.ap-south-1.eks.amazonaws.com'
+                ]]) {
+                    sh 'kubectl apply -f deployment-service.yml'
                 }
             }
         }
-        
-        stage('verify Deployment') {
+
+        stage('Verify Deployment') {
             steps {
-                withKubeCredentials(kubectlCredentials: [[caCertificate: '', clusterName: 'EKS-1', contextName: '', credentialsId: 'k8-token', namespace: 'webapps', serverUrl: 'https://959E6939FD0CC72E214840E35699D99A.gr7.ap-south-1.eks.amazonaws.com']]) {
-                    sh "kubectl get svc -n webapps"
+                withKubeCredentials(kubectlCredentials: [[
+                    caCertificate: '',
+                    clusterName: 'EKS-1',
+                    contextName: '',
+                    credentialsId: 'k8-token',
+                    namespace: 'webapps',
+                    serverUrl: 'https://959E6939FD0CC72E214840E35699D99A.gr7.ap-south-1.eks.amazonaws.com'
+                ]]) {
+                    sh 'kubectl get svc -n webapps'
                 }
             }
         }
