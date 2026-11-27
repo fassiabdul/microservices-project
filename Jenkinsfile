@@ -18,10 +18,7 @@ pipeline {
                     tar -czf artifacts/deployment-${BUILD_NUMBER}.tar.gz \
                         Jenkinsfile deployment-service.yml
 
-                    aws s3 cp \
-                        artifacts/deployment-${BUILD_NUMBER}.tar.gz \
-                        s3://${S3_BUCKET}/microservices-project/${BRANCH_NAME}/${BUILD_NUMBER}/deployment-${BUILD_NUMBER}.tar.gz \
-                        --sse AES256
+                    aws s3 cp artifacts/deployment-${BUILD_NUMBER}.tar.gz "s3://${S3_BUCKET}/microservices-project/${BRANCH_NAME}/${BUILD_NUMBER}/deployment-${BUILD_NUMBER}.tar.gz" --sse AES256
                 '''
 
                 archiveArtifacts(
