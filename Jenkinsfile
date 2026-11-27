@@ -3,7 +3,7 @@ pipeline {
     agent any
 
     environment {
-        S3_BUCKET = 'microservice.project.artifact.bucket '
+        S3_BUCKET = 'microservice.project.artifact.bucket'
     }
 
     stages {
